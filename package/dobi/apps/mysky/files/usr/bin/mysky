@@ -1,0 +1,8 @@
+#!/bin/sh
+# Copyright (C) Hua Shao <nossiac@163.com>
+
+[ -d /tmp/mysky ] || mkdir -p /tmp/mysky
+mysky -W 1280 -H 720 -o /tmp/mysky/1.jpg
+curl -H "Expect:" -v -X POST -H "Content-Type: multipart/form-data" -F "type=image" -F "file=@/tmp/mysky/1.jpg" http://nossiac.com/mysky/upload
+
+

@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+
+START=91
+STOP=91
+
+USE_PROCD=1
+
+start_service() {
+	echo "*/10 * * * * /usr/bin/mysky" > /etc/crontabs/root
+}
+
+stop_service() {
+    echo 'do nothing' > /dev/null
+}
+
+

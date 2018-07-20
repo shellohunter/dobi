@@ -70,9 +70,10 @@ int main(int argc, char *argv[])
     {
         case 'w':
             tmp = head;
+            count = 0;
             while (tmp)
             {
-
+                printf("Currently writing block %d\n", count++);
                 memset(tmp->ptr, 1, x_allocunit);
                 tmp = tmp->next;
             }

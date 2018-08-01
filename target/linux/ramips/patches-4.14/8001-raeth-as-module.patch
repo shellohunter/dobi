@@ -1,0 +1,104 @@
+Index: linux-4.14.54/drivers/net/ethernet/mediatek/Kconfig
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mediatek/Kconfig
++++ linux-4.14.54/drivers/net/ethernet/mediatek/Kconfig
+@@ -1,5 +1,6 @@
+ config NET_VENDOR_MEDIATEK
+-	bool "MediaTek ethernet driver"
++	tristate "MediaTek ethernet driver"
++    default y
+ 	depends on ARCH_MEDIATEK
+ 	---help---
+ 	  If you have a Mediatek SoC with ethernet, say Y.
+Index: linux-4.14.54/drivers/net/ethernet/mtk/gsw_mt7621.c
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mtk/gsw_mt7621.c
++++ linux-4.14.54/drivers/net/ethernet/mtk/gsw_mt7621.c
+@@ -28,11 +28,13 @@ void mtk_switch_w32(struct mt7620_gsw *g
+ {
+ 	iowrite32(val, gsw->base + reg);
+ }
++EXPORT_SYMBOL(mtk_switch_w32);
+ 
+ u32 mtk_switch_r32(struct mt7620_gsw *gsw, unsigned reg)
+ {
+ 	return ioread32(gsw->base + reg);
+ }
++EXPORT_SYMBOL(mtk_switch_r32);
+ 
+ static irqreturn_t gsw_interrupt_mt7621(int irq, void *_priv)
+ {
+@@ -234,6 +236,8 @@ int mtk_gsw_init(struct fe_priv *priv)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(mtk_gsw_init);
++
+ 
+ static int mt7621_gsw_probe(struct platform_device *pdev)
+ {
+Index: linux-4.14.54/drivers/net/ethernet/mtk/mt7530.c
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mtk/mt7530.c
++++ linux-4.14.54/drivers/net/ethernet/mtk/mt7530.c
+@@ -977,3 +977,4 @@ mt7530_probe(struct device *dev, void __
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(mt7530_probe);
+Index: linux-4.14.54/drivers/net/ethernet/mtk/mtk_eth_soc.c
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mtk/mtk_eth_soc.c
++++ linux-4.14.54/drivers/net/ethernet/mtk/mtk_eth_soc.c
+@@ -137,6 +137,7 @@ void fe_reset(u32 reset_bits)
+ 	rt_sysc_w32(t, SYSC_REG_RSTCTRL);
+ 	usleep_range(10, 20);
+ }
++EXPORT_SYMBOL(fe_reset);
+ 
+ static inline void fe_int_disable(u32 mask)
+ {
+Index: linux-4.14.54/drivers/net/ethernet/mtk/mdio_mt7620.c
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mtk/mdio_mt7620.c
++++ linux-4.14.54/drivers/net/ethernet/mtk/mdio_mt7620.c
+@@ -53,6 +53,7 @@ u32 _mt7620_mii_write(struct mt7620_gsw
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(_mt7620_mii_write);
+ 
+ u32 _mt7620_mii_read(struct mt7620_gsw *gsw, int phy_addr, int phy_reg)
+ {
+@@ -73,6 +74,7 @@ u32 _mt7620_mii_read(struct mt7620_gsw *
+ 
+ 	return d;
+ }
++EXPORT_SYMBOL(_mt7620_mii_read);
+ 
+ int mt7620_mdio_write(struct mii_bus *bus, int phy_addr, int phy_reg, u16 val)
+ {
+@@ -96,6 +98,7 @@ void mt7530_mdio_w32(struct mt7620_gsw *
+ 	_mt7620_mii_write(gsw, 0x1f, (reg >> 2) & 0xf,  val & 0xffff);
+ 	_mt7620_mii_write(gsw, 0x1f, 0x10, val >> 16);
+ }
++EXPORT_SYMBOL(mt7530_mdio_w32);
+ 
+ u32 mt7530_mdio_r32(struct mt7620_gsw *gsw, u32 reg)
+ {
+@@ -107,6 +110,7 @@ u32 mt7530_mdio_r32(struct mt7620_gsw *g
+ 
+ 	return (high << 16) | (low & 0xffff);
+ }
++EXPORT_SYMBOL(mt7530_mdio_r32);
+ 
+ static unsigned char *fe_speed_str(int speed)
+ {
+@@ -147,6 +151,7 @@ void mt7620_handle_carrier(struct fe_pri
+ 	else
+ 		netif_carrier_off(priv->netdev);
+ }
++EXPORT_SYMBOL(mt7620_handle_carrier);
+ 
+ void mt7620_print_link_state(struct fe_priv *priv, int port, int link,
+ 			     int speed, int duplex)

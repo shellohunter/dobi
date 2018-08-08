@@ -138,28 +138,28 @@ endef
 $(eval $(call KernelPackage,sound-mt7620))
 
 
-define KernelPackage/mt7530
+define KernelPackage/mt7530-dsa
   TITLE:=MT7530 DSA driver
   DEPENDS:=@TARGET_ramips 
   KCONFIG:= \
     CONFIG_NET_DSA \
     CONFIG_NET_DSA_MT7530
   FILES:= \
-    $(LINUX_DIR)/drivers/net/ethernet/mtk/mt7530.ko
+    $(LINUX_DIR)/drivers/net/dsa/mt7530.ko
   AUTOLOAD:=$(call AutoLoad,10,mt7530)
 endef
 
-define KernelPackage/mt7530/description
+define KernelPackage/mt7530-dsa/description
   MT7530 DSA driver
 endef
 
-$(eval $(call KernelPackage,mt7530))
+$(eval $(call KernelPackage,mt7530-dsa))
 
 
 
 define KernelPackage/mt7621-eth
   TITLE:=MT7621 Ethernet Driver
-  DEPENDS:=@TARGET_ramips +kmod-mt7530
+  DEPENDS:=@TARGET_ramips
   KCONFIG:= \
     CONFIG_NET_VENDOR_MEDIATEK=m \
     CONFIG_NET_MEDIATEK_SOC=m \
@@ -170,11 +170,10 @@ define KernelPackage/mt7621-eth
     CONFIG_NET_MEDIATEK_GSW_MT7621=m
   FILES:= \
     $(LINUX_DIR)/drivers/net/ethernet/mtk/mtk-eth-soc.ko \
-    $(LINUX_DIR)/drivers/net/ethernet/mtk/gsw_mt7621.ko
-  AUTOLOAD:=$(call AutoLoad,10,mtk-eth-soc gsw_mt7621)
+    $(LINUX_DIR)/drivers/net/ethernet/mtk/gsw-mt7621.ko
 endef
 
-define KernelPackage/mt7621/description
+define KernelPackage/mt7621-eth/description
   MT7621 Ethernet Driver
 endef
 

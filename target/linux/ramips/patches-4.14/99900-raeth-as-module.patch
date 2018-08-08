@@ -41,11 +41,14 @@ Index: linux-4.14.54/drivers/net/ethernet/mtk/mt7530.c
 ===================================================================
 --- linux-4.14.54.orig/drivers/net/ethernet/mtk/mt7530.c
 +++ linux-4.14.54/drivers/net/ethernet/mtk/mt7530.c
-@@ -977,3 +977,4 @@ mt7530_probe(struct device *dev, void __
+@@ -977,3 +977,7 @@ mt7530_probe(struct device *dev, void __
  
  	return 0;
  }
 +EXPORT_SYMBOL(mt7530_probe);
++
++MODULE_LICENSE("GPL");
++
 Index: linux-4.14.54/drivers/net/ethernet/mtk/mtk_eth_soc.c
 ===================================================================
 --- linux-4.14.54.orig/drivers/net/ethernet/mtk/mtk_eth_soc.c
@@ -102,3 +105,65 @@ Index: linux-4.14.54/drivers/net/ethernet/mtk/mdio_mt7620.c
  
  void mt7620_print_link_state(struct fe_priv *priv, int port, int link,
  			     int speed, int duplex)
+Index: linux-4.14.54/drivers/net/ethernet/mtk/Makefile
+===================================================================
+--- linux-4.14.54.orig/drivers/net/ethernet/mtk/Makefile
++++ linux-4.14.54/drivers/net/ethernet/mtk/Makefile
+@@ -2,21 +2,40 @@
+ # Makefile for the Ralink SoCs built-in ethernet macs
+ #
+ 
+-mtk-eth-soc-y					+= mtk_eth_soc.o ethtool.o
++#mtk-eth-soc-y					+= mtk_eth_soc.o ethtool.o
++
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO)		+= mdio.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO_RT2880)	+= mdio_rt2880.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO_MT7620)	+= mdio_mt7620.o
++#
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_OFFLOAD)	+= mtk_offload.o mtk_debugfs.o
++#
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT2880)	+= soc_rt2880.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT3050)	+= soc_rt3050.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT3883)	+= soc_rt3883.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MT7620)	+= soc_mt7620.o
++#mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MT7621)	+= soc_mt7621.o
++#
++#obj-$(CONFIG_NET_MEDIATEK_ESW_RT3050)		+= esw_rt3050.o
++#obj-$(CONFIG_NET_MEDIATEK_GSW_MT7620)		+= gsw_mt7620.o mt7530.o
++#obj-$(CONFIG_NET_MEDIATEK_GSW_MT7621)		+= gsw_mt7621.o mt7530.o
++
++
++obj-$(CONFIG_NET_MEDIATEK_SOC)			+= mtk-eth-soc.o gsw-mt7621.o
++
++gsw-mt7621-$(CONFIG_NET_MEDIATEK_SOC) += gsw_mt7621.o
++
++mtk-eth-soc-$(CONFIG_NET_MEDIATEK_SOC) += mtk_eth_soc.o soc_mt7621.o ethtool.o mt7530.o
++
++ifeq ($(CONFIG_NET_MEDIATEK_MDIO),y)
++mtk-eth-soc-$(CONFIG_NET_MEDIATEK_SOC) += mdio.o
++endif
++
++ifeq ($(CONFIG_NET_MEDIATEK_MDIO_MT7620),y)
++mtk-eth-soc-$(CONFIG_NET_MEDIATEK_SOC) += mdio_mt7620.o
++endif
++
++ifeq ($(CONFIG_NET_MEDIATEK_OFFLOAD),y)
++mtk-eth-soc-$(CONFIG_NET_MEDIATEK_SOC) += mtk_offload.o mtk_debugfs.o
++endif
+ 
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO)		+= mdio.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO_RT2880)	+= mdio_rt2880.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MDIO_MT7620)	+= mdio_mt7620.o
+-
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_OFFLOAD)	+= mtk_offload.o mtk_debugfs.o
+-
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT2880)	+= soc_rt2880.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT3050)	+= soc_rt3050.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_RT3883)	+= soc_rt3883.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MT7620)	+= soc_mt7620.o
+-mtk-eth-soc-$(CONFIG_NET_MEDIATEK_MT7621)	+= soc_mt7621.o
+-
+-obj-$(CONFIG_NET_MEDIATEK_ESW_RT3050)		+= esw_rt3050.o
+-obj-$(CONFIG_NET_MEDIATEK_GSW_MT7620)		+= gsw_mt7620.o mt7530.o
+-obj-$(CONFIG_NET_MEDIATEK_GSW_MT7621)		+= gsw_mt7621.o mt7530.o
+-obj-$(CONFIG_NET_MEDIATEK_SOC)			+= mtk-eth-soc.o

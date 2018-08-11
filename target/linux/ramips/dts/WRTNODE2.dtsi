@@ -7,7 +7,7 @@
 	compatible = "wrtnode,wrtnode2", "mediatek,mt7628an-soc";
 
 	chosen {
-		bootargs = "console=ttyS0,115200";
+		bootargs = "console=ttyS0,57600";
 	};
 
 	gpio-keys-polled {

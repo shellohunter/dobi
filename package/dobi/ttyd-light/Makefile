@@ -22,6 +22,10 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Hua Shao <nossiac@163.com>
 CMAKE_INSTALL:=1
+HTDOCS = /www
+LUA_LIBRARYDIR = /usr/lib/lua
+LUCI_LIBRARYDIR = $(LUA_LIBRARYDIR)/luci
+PLUGIN = $(PKG_BUILD_DIR)/openwrt/luci-app-terminal
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -40,9 +44,39 @@ define Package/ttyd-light/description
 ttyd-light is a command-line tool for sharing terminal over the web.
 endef
 
+define Package/ttyd-luci-plugin
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=LuCI plugin for ttyd
+  SUBMENU:=Terminal
+  DEPENDS:=+lua +ttyd-light +luci
+  VERSION:=$(PKG_VERSION)
+endef
+
+define Package/ttyd-luci-plugin/install
+	cp -pR $(PLUGIN)/luasrc/* $(1)$(LUCI_LIBRARYDIR)/; \
+	if [ -d $(PLUGIN)/luasrc ]; then \
+	  $(INSTALL_DIR) $(1)$(LUCI_LIBRARYDIR); \
+	  cp -pR $(PLUGIN)/luasrc/* $(1)$(LUCI_LIBRARYDIR)/; \
+	else true; fi
+	if [ -d $(PLUGIN)/htdocs ]; then \
+	  $(INSTALL_DIR) $(1)$(HTDOCS); \
+	  cp -pR $(PLUGIN)/htdocs/* $(1)$(HTDOCS)/; \
+	else true; fi
+	if [ -d $(PLUGIN)/root ]; then \
+	  $(INSTALL_DIR) $(1)/; \
+	  cp -pR $(PLUGIN)/root/* $(1)/; \
+	else true; fi
+	if [ -d $(PLUGIN)/src ]; then \
+	  $(call Build/Install/Default) \
+	  $(CP) ./$(PKG_INSTALL_DIR)/* $(1)/; \
+	else true; fi
+endef
+
 define Package/ttyd-light/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ttyd $(1)/usr/bin/
 endef
 
+$(eval $(call BuildPackage,ttyd-luci-plugin))
 $(eval $(call BuildPackage,ttyd-light))
